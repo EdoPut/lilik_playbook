@@ -1,0 +1,16 @@
+---
+- name: install https for apt
+  apt: name=apt-transport-https
+- name: install gogs dependecies
+  apt: name={{ item }} state=latest
+  with_items:
+      - sqlite3
+      - git
+- name: add the gogs' repository key
+  apt_key: url=https://deb.packager.io/key state=present 
+- name: Add the packager.io repository to the list
+  apt_repository: repo='deb https://deb.packager.io/gh/pkgr/gogs jessie pkgr' state=present
+- name: install gogs and associated packages
+  apt: name=gogs state=latest update_cache=yes
+- name: Copy Nginx configuration to webserver dir
+  file: src=files/nginx.conf dest=/etc/nginx/sites-enabled/default force=yes
